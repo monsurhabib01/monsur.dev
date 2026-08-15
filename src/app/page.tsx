@@ -3,11 +3,19 @@
 import React, { useEffect, useState } from "react";
 
 // ---- Editable content -------------------------------------------------
+// Priority order reflects current focus: PWA/dev first (fastest to get
+// hired for), automation second, fintech/AML as long-term differentiator.
 const ROLE_WORDS = [
-  "Fraud Detection",
-  "N8N Automations",
-  "Secure Fintech APIs",
   "PWA Architecture",
+  "N8N/AI Automations",
+  "Secure Fintech Systems",
+];
+
+const PWA_CHECKS = [
+  { label: "Web App Manifest", detail: "name, icons, theme configured" },
+  { label: "Service Worker", detail: "registered · offline cache active" },
+  { label: "Installable", detail: "passes Chrome install criteria" },
+  { label: "Responsive", detail: "mobile, tablet, desktop tested" },
 ];
 
 const TRANSACTIONS = [
@@ -65,6 +73,79 @@ function riskColor(risk: string) {
   return "text-emerald-400 bg-emerald-500/10 border-emerald-500/30";
 }
 
+function BrowserChrome({ url, live = true }: { url: string; live?: boolean }) {
+  return (
+    <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-3">
+      <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
+      <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70" />
+      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
+      <span className="ml-3 text-xs font-medium text-slate-500">{url}</span>
+      {live && (
+        <span className="ml-auto flex items-center gap-1.5 text-xs text-emerald-400">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+          live
+        </span>
+      )}
+    </div>
+  );
+}
+
+function PWAInstallCard() {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [installed, setInstalled] = useState(false);
+
+  useEffect(() => {
+    if (visibleCount >= PWA_CHECKS.length) {
+      const t = setTimeout(() => setInstalled(true), 500);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setVisibleCount((c) => c + 1), 500);
+    return () => clearTimeout(t);
+  }, [visibleCount]);
+
+  return (
+    <div className="w-full rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-emerald-500/5 backdrop-blur">
+      <BrowserChrome url="monsur.dev" />
+
+      <div className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
+        <span className="text-sm text-slate-300">Add Monsur.Dev to Home Screen</span>
+        <span
+          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+            installed
+              ? "bg-emerald-500/10 text-emerald-400"
+              : "bg-emerald-500 text-slate-950"
+          }`}
+        >
+          {installed ? "✓ Installed" : "Install"}
+        </span>
+      </div>
+
+      <div className="space-y-2 p-4">
+        {PWA_CHECKS.slice(0, visibleCount).map((c) => (
+          <div
+            key={c.label}
+            className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2.5 text-sm animate-[fadeIn_0.4s_ease-out]"
+          >
+            <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-emerald-500/10 text-xs text-emerald-400">
+              ✓
+            </span>
+            <div className="flex flex-col">
+              <span className="text-slate-200">{c.label}</span>
+              <span className="text-xs text-slate-500">{c.detail}</span>
+            </div>
+          </div>
+        ))}
+        {visibleCount < PWA_CHECKS.length && (
+          <div className="flex items-center gap-2 px-1 py-2 text-xs text-slate-500">
+            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-slate-500" />
+            checking install criteria…
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function FraudDashboardCard() {
   const [visibleCount, setVisibleCount] = useState(0);
 
@@ -80,19 +161,7 @@ function FraudDashboardCard() {
 
   return (
     <div className="w-full rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-emerald-500/5 backdrop-blur">
-      {/* window chrome */}
-      <div className="flex items-center gap-2 border-b border-slate-800 px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-red-500/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-amber-500/70" />
-        <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/70" />
-        <span className="ml-3 text-xs font-medium text-slate-500">
-          fraud-monitor.live
-        </span>
-        <span className="ml-auto flex items-center gap-1.5 text-xs text-emerald-400">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          live
-        </span>
-      </div>
+      <BrowserChrome url="fraud-monitor.live" />
 
       {/* stats row */}
       <div className="grid grid-cols-3 gap-px border-b border-slate-800 bg-slate-800/50">
@@ -143,8 +212,11 @@ function FraudDashboardCard() {
   );
 }
 
-function WorkflowStrip() {
-  const nodes = ["Webhook", "AML Rules", "Risk Score", "Alert / N8N"];
+function WorkflowStrip({ variant }: { variant: "pwa" | "fraud" }) {
+  const nodes =
+    variant === "pwa"
+      ? ["Push", "Build", "Deploy", "Cache / SW"]
+      : ["Webhook", "AML Rules", "Risk Score", "Alert / N8N"];
   return (
     <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/60 px-4 py-4">
       {nodes.map((n, i) => (
@@ -187,6 +259,7 @@ function ProofCard({
 
 export default function Home() {
   const typed = useTypedWord(ROLE_WORDS);
+  const [tab, setTab] = useState<"pwa" | "fraud">("pwa");
 
   return (
     <main className="min-h-screen bg-slate-900 px-6 py-16 text-slate-100 md:px-12 lg:px-20">
@@ -199,12 +272,9 @@ export default function Home() {
             Available for freelance & remote work
           </div>
 
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400 bg-clip-text text-transparent">
-              I build systems that stop fraud
-            </span>
-            <br />
-            <span className="text-slate-100">before it happens.</span>
+          <h1 className="bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl">
+            Full-Stack Engineer Specializing in PWA Architecture, N8N/AI
+            Automations, and Secure Fintech Ecosystems Solutions.
           </h1>
 
           <p className="mt-5 h-7 font-mono text-lg text-slate-400">
@@ -214,9 +284,9 @@ export default function Home() {
           </p>
 
           <p className="mt-4 max-w-md text-slate-400">
-            Full-stack engineer specializing in AML/fraud detection for
-            Bangladesh&apos;s MFS ecosystem, N8N-powered workflow automation,
-            and installable PWA products.
+            Building high-performance, installable web apps and N8N-powered
+            automations — with a growing specialization in fintech
+            compliance for Bangladesh&apos;s MFS ecosystem.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
@@ -229,10 +299,33 @@ export default function Home() {
           </div>
         </div>
 
-        {/* right: live mockup */}
+        {/* right: live mockup with tab switcher */}
         <div>
-          <FraudDashboardCard />
-          <WorkflowStrip />
+          <div className="mb-3 flex gap-2">
+            <button
+              onClick={() => setTab("pwa")}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                tab === "pwa"
+                  ? "bg-emerald-500 text-slate-950"
+                  : "bg-slate-800/60 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              PWA Demo
+            </button>
+            <button
+              onClick={() => setTab("fraud")}
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                tab === "fraud"
+                  ? "bg-emerald-500 text-slate-950"
+                  : "bg-slate-800/60 text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              Fraud Detection (Case Study)
+            </button>
+          </div>
+
+          {tab === "pwa" ? <PWAInstallCard /> : <FraudDashboardCard />}
+          <WorkflowStrip variant={tab} />
         </div>
       </section>
 
@@ -248,7 +341,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          {/* lighthouse scores - spans 2 */}
+          {/* lighthouse scores - spans 2, leads because PWA is the current focus */}
           <ProofCard title="Lighthouse Audit — This Site" className="md:col-span-2">
             <div className="grid grid-cols-4 gap-3">
               {METRICS.map((m) => (
@@ -272,27 +365,27 @@ export default function Home() {
             </div>
           </ProofCard>
 
+          {/* Automation */}
+          <ProofCard title="Automation">
+            <div className="text-sm text-slate-200">
+              N8N workflows: webhook → rules → alerting.
+            </div>
+          </ProofCard>
+
           {/* Gumroad product */}
-          <ProofCard title="Shipped Product">
+          <ProofCard title="Shipped Product" className="md:col-span-2">
             <div className="text-sm text-slate-200">
               Python AML &amp; Fraud Detection Toolkit
             </div>
             <div className="mt-1 text-xs text-slate-500">Live on Gumroad</div>
           </ProofCard>
 
-          {/* N8N */}
-          <ProofCard title="Automation" className="md:col-span-2">
+          {/* domain - long-term focus, placed last intentionally */}
+          <ProofCard title="Long-Term Specialization" className="md:col-span-2">
             <div className="text-sm text-slate-200">
-              N8N workflows connecting webhook intake → rule engine → risk
-              scoring → alerting, replacing manual review steps.
-            </div>
-          </ProofCard>
-
-          {/* domain */}
-          <ProofCard title="Domain Focus" className="md:col-span-2">
-            <div className="text-sm text-slate-200">
-              Bangladesh MFS ecosystem — bKash, Nagad, BFIU-aligned
-              compliance patterns.
+              Deepening expertise in Bangladesh&apos;s MFS ecosystem — bKash,
+              Nagad, BFIU-aligned compliance — as a longer-horizon focus
+              alongside client delivery work.
             </div>
           </ProofCard>
         </div>
