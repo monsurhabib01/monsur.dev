@@ -9,7 +9,10 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  /* আপনার অন্য কোনো নেক্সট-জেএস কনফিগারেশন থাকলে এখানে বসবে */
+  // Cloudflare Pages static hosting — no server features (API routes,
+  // server actions, dynamic routes) are used on this site, so a full
+  // static export is the simplest and most reliable deploy target.
+  output: "export",
 };
 
 // PWA প্লাগইন দিয়ে মূল কনফিগারেশনকে র‍্যাপ (Wrap) করে এক্সপোর্ট করা

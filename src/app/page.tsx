@@ -162,6 +162,9 @@ function FraudDashboardCard() {
   return (
     <div className="w-full rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-emerald-500/5 backdrop-blur">
       <BrowserChrome url="fraud-monitor.live" />
+      <div className="border-b border-slate-800 px-4 py-1.5 text-[10px] uppercase tracking-wider text-slate-600">
+        Simulated data — illustrative case study
+      </div>
 
       {/* stats row */}
       <div className="grid grid-cols-3 gap-px border-b border-slate-800 bg-slate-800/50">
@@ -262,7 +265,35 @@ export default function Home() {
   const [tab, setTab] = useState<"pwa" | "fraud">("pwa");
 
   return (
-    <main className="min-h-screen bg-slate-900 px-6 py-16 text-slate-100 md:px-12 lg:px-20">
+    <main className="min-h-screen bg-slate-900 text-slate-100">
+      <header className="sticky top-0 z-50 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 md:px-12 lg:px-20">
+          <a href="#" className="text-sm font-bold tracking-tight text-slate-100">
+            Monsur<span className="text-emerald-400">.dev</span>
+          </a>
+          <nav className="hidden items-center gap-8 text-sm text-slate-400 sm:flex">
+            <a href="#proof" className="transition hover:text-slate-200">
+              Work
+            </a>
+            <a
+              href="https://aitipseveryday.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition hover:text-slate-200"
+            >
+              Blog
+            </a>
+          </nav>
+          <a
+            href="#contact"
+            className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-emerald-400"
+          >
+            Let&apos;s Talk
+          </a>
+        </div>
+      </header>
+
+      <div className="px-6 py-16 md:px-12 lg:px-20">
       {/* HERO */}
       <section className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-8">
         {/* left: copy */}
@@ -284,18 +315,28 @@ export default function Home() {
           </p>
 
           <p className="mt-4 max-w-md text-slate-400">
-            Building high-performance, installable web apps and N8N-powered
-            automations — with a growing specialization in fintech
-            compliance for Bangladesh&apos;s MFS ecosystem.
+            I build installable PWAs that load instantly, automate workflows
+            with N8N, and ship fraud-detection systems for fintechs that need
+            to harden compliance.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-4">
-            <button className="rounded-lg bg-emerald-500 px-6 py-3 font-medium text-slate-950 transition hover:bg-emerald-400">
+            <a
+              href="https://github.com/monsurhabib01"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg bg-emerald-500 px-6 py-3 font-medium text-slate-950 transition hover:bg-emerald-400"
+            >
               View Projects
-            </button>
-            <button className="rounded-lg border border-slate-700 bg-slate-800/50 px-6 py-3 font-medium text-slate-200 transition hover:bg-slate-800">
+            </a>
+            <a
+              href="https://aitipseveryday.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg border border-slate-700 bg-slate-800/50 px-6 py-3 font-medium text-slate-200 transition hover:bg-slate-800"
+            >
               Read Blog Archive
-            </button>
+            </a>
           </div>
         </div>
 
@@ -326,11 +367,21 @@ export default function Home() {
 
           {tab === "pwa" ? <PWAInstallCard /> : <FraudDashboardCard />}
           <WorkflowStrip variant={tab} />
+          {tab === "pwa" && (
+            <a
+              href="https://brta-busfare.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-400 transition hover:text-emerald-300"
+            >
+              Try the live PWA →
+            </a>
+          )}
         </div>
       </section>
 
       {/* PROOF / BENTO GRID */}
-      <section className="mx-auto mt-24 max-w-6xl">
+      <section id="proof" className="mx-auto mt-24 max-w-6xl scroll-mt-20">
         <div className="mb-8 text-center">
           <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
             Proof, not promises
@@ -374,9 +425,14 @@ export default function Home() {
 
           {/* Gumroad product */}
           <ProofCard title="Shipped Product" className="md:col-span-2">
-            <div className="text-sm text-slate-200">
+            <a
+              href="https://monsurhabib01.gumroad.com/l/pythonamltoolkit"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-slate-200 underline decoration-slate-700 underline-offset-4 transition hover:text-emerald-400 hover:decoration-emerald-400"
+            >
               Python AML &amp; Fraud Detection Toolkit
-            </div>
+            </a>
             <div className="mt-1 text-xs text-slate-500">Live on Gumroad</div>
           </ProofCard>
 
@@ -390,6 +446,53 @@ export default function Home() {
           </ProofCard>
         </div>
       </section>
+
+      {/* CONTACT / HIRE */}
+      <section id="contact" className="mx-auto mt-24 max-w-6xl scroll-mt-20">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-center sm:p-12">
+          <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+            Let&apos;s work together
+          </div>
+          <h2 className="mt-2 text-2xl font-bold text-slate-100 sm:text-3xl">
+            Have a project in mind?
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-slate-400">
+            Open for freelance and remote work — PWA builds, N8N/AI
+            automations, and fintech fraud-detection systems.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <a
+              href="https://mail.google.com/mail/?view=cm&fs=1&to=monsurhabib01@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg bg-emerald-500 px-6 py-3 font-medium text-slate-950 transition hover:bg-emerald-400"
+            >
+              Email Me
+            </a>
+            <a
+              href="https://wa.me/8801675115659"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg border border-slate-700 bg-slate-800/50 px-6 py-3 font-medium text-slate-200 transition hover:bg-slate-800"
+            >
+              WhatsApp
+            </a>
+            <a
+              href="https://www.linkedin.com/in/monsur-habib/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg border border-slate-700 bg-slate-800/50 px-6 py-3 font-medium text-slate-200 transition hover:bg-slate-800"
+            >
+              LinkedIn
+            </a>
+          </div>
+          <p className="mt-4 text-xs text-slate-500">
+            Or email directly:{" "}
+            <span className="text-slate-400">admin@aitipseveryday.com</span>
+          </p>
+        </div>
+      </section>
+      </div>
     </main>
   );
 }
