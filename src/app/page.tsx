@@ -95,13 +95,20 @@ function PWAInstallCard() {
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
+    if (installed) {
+      const t = setTimeout(() => {
+        setInstalled(false);
+        setVisibleCount(0);
+      }, 3000);
+      return () => clearTimeout(t);
+    }
     if (visibleCount >= PWA_CHECKS.length) {
       const t = setTimeout(() => setInstalled(true), 500);
       return () => clearTimeout(t);
     }
     const t = setTimeout(() => setVisibleCount((c) => c + 1), 500);
     return () => clearTimeout(t);
-  }, [visibleCount]);
+  }, [visibleCount, installed]);
 
   return (
     <div className="w-full rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl shadow-emerald-500/5 backdrop-blur">
@@ -121,10 +128,12 @@ function PWAInstallCard() {
       </div>
 
       <div className="space-y-2 p-4">
-        {PWA_CHECKS.slice(0, visibleCount).map((c) => (
+        {PWA_CHECKS.map((c, i) => (
           <div
             key={c.label}
-            className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2.5 text-sm animate-[fadeIn_0.4s_ease-out]"
+            className={`flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2.5 text-sm transition-opacity duration-300 ${
+              i < visibleCount ? "opacity-100" : "opacity-0"
+            }`}
           >
             <span className="flex h-5 w-5 flex-none items-center justify-center rounded-full bg-emerald-500/10 text-xs text-emerald-400">
               ✓
@@ -135,12 +144,14 @@ function PWAInstallCard() {
             </div>
           </div>
         ))}
-        {visibleCount < PWA_CHECKS.length && (
-          <div className="flex items-center gap-2 px-1 py-2 text-xs text-slate-500">
-            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-slate-500" />
-            checking install criteria…
-          </div>
-        )}
+        <div
+          className={`flex items-center gap-2 px-1 py-2 text-xs text-slate-500 transition-opacity duration-300 ${
+            visibleCount < PWA_CHECKS.length ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span className="h-1.5 w-1.5 animate-ping rounded-full bg-slate-500" />
+          checking install criteria…
+        </div>
       </div>
     </div>
   );
@@ -150,7 +161,10 @@ function FraudDashboardCard() {
   const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
-    if (visibleCount >= TRANSACTIONS.length) return;
+    if (visibleCount >= TRANSACTIONS.length) {
+      const t = setTimeout(() => setVisibleCount(0), 3000);
+      return () => clearTimeout(t);
+    }
     const t = setTimeout(() => setVisibleCount((c) => c + 1), 550);
     return () => clearTimeout(t);
   }, [visibleCount]);
@@ -167,7 +181,7 @@ function FraudDashboardCard() {
       </div>
 
       {/* stats row */}
-      <div className="grid grid-cols-3 gap-px border-b border-slate-800 bg-slate-800/50">
+      <div className="grid grid-cols-4 gap-px border-b border-slate-800 bg-slate-800/50">
         <div className="bg-slate-900/80 px-4 py-3">
           <div className="text-xs text-slate-500">Scanned</div>
           <div className="text-lg font-semibold text-slate-100">{visibleCount}</div>
@@ -180,14 +194,20 @@ function FraudDashboardCard() {
           <div className="text-xs text-slate-500">Avg. Latency</div>
           <div className="text-lg font-semibold text-emerald-400">82ms</div>
         </div>
+        <div className="bg-slate-900/80 px-4 py-3">
+          <div className="text-xs text-slate-500">Est. Precision</div>
+          <div className="text-lg font-semibold text-sky-400">94%</div>
+        </div>
       </div>
 
       {/* transaction feed */}
       <div className="space-y-2 p-4">
-        {TRANSACTIONS.slice(0, visibleCount).map((tx) => (
+        {TRANSACTIONS.map((tx, i) => (
           <div
             key={tx.id}
-            className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm animate-[fadeIn_0.4s_ease-out]"
+            className={`flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm transition-opacity duration-300 ${
+              i < visibleCount ? "opacity-100" : "opacity-0"
+            }`}
           >
             <div className="flex flex-col">
               <span className="font-mono text-xs text-slate-500">{tx.id}</span>
@@ -204,12 +224,29 @@ function FraudDashboardCard() {
             </span>
           </div>
         ))}
-        {visibleCount < TRANSACTIONS.length && (
-          <div className="flex items-center gap-2 px-1 py-2 text-xs text-slate-500">
-            <span className="h-1.5 w-1.5 animate-ping rounded-full bg-slate-500" />
-            scanning next transaction…
-          </div>
-        )}
+        <div
+          className={`flex items-center gap-2 px-1 py-2 text-xs text-slate-500 transition-opacity duration-300 ${
+            visibleCount < TRANSACTIONS.length ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <span className="h-1.5 w-1.5 animate-ping rounded-full bg-slate-500" />
+          scanning next transaction…
+        </div>
+      </div>
+
+      <div className="border-t border-slate-800 px-4 py-3 text-[11px] text-slate-500">
+        Score &gt; 0.85 = high-risk (auto-flag) · 0.5–0.85 = manual review · &lt; 0.5 = safe
+      </div>
+
+      <div className="border-t border-slate-800 px-4 py-3">
+        <a
+          href="https://github.com/monsurhabib01?tab=repositories"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-medium text-emerald-400 transition hover:text-emerald-300"
+        >
+          See technical breakdown →
+        </a>
       </div>
     </div>
   );
@@ -263,6 +300,7 @@ function ProofCard({
 export default function Home() {
   const typed = useTypedWord(ROLE_WORDS);
   const [tab, setTab] = useState<"pwa" | "fraud">("pwa");
+  const [copied, setCopied] = useState(false);
 
   return (
     <main className="min-h-screen bg-slate-900 text-slate-100">
@@ -304,8 +342,8 @@ export default function Home() {
           </div>
 
           <h1 className="bg-gradient-to-r from-emerald-400 via-teal-300 to-sky-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl">
-            Full-Stack Engineer Specializing in PWA Architecture, N8N/AI
-            Automations, and Secure Fintech Ecosystems Solutions.
+            Full-Stack Engineer Building PWAs, AI Automations &amp; Secure
+            Systems.
           </h1>
 
           <p className="mt-5 h-7 font-mono text-lg text-slate-400">
@@ -433,7 +471,17 @@ export default function Home() {
             >
               Python AML &amp; Fraud Detection Toolkit
             </a>
-            <div className="mt-1 text-xs text-slate-500">Live on Gumroad</div>
+            <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
+              <span>Live on Gumroad</span>
+              <a
+                href="https://monsurhabib01.github.io"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-emerald-400 transition hover:text-emerald-300"
+              >
+                Browse all projects on GitHub →
+              </a>
+            </div>
           </ProofCard>
 
           {/* domain - long-term focus, placed last intentionally */}
@@ -462,12 +510,19 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <a
-              href="https://mail.google.com/mail/?view=cm&fs=1&to=monsurhabib01@gmail.com"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:hello@aitipseveryday.com"
+              onClick={() => {
+                if (typeof navigator !== "undefined" && navigator.clipboard) {
+                  navigator.clipboard
+                    .writeText("hello@aitipseveryday.com")
+                    .catch(() => {});
+                }
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
               className="rounded-lg bg-emerald-500 px-6 py-3 font-medium text-slate-950 transition hover:bg-emerald-400"
             >
-              Email Me
+              {copied ? "Copied: hello@aitipseveryday.com" : "Email Me"}
             </a>
             <a
               href="https://wa.me/8801675115659"
@@ -486,10 +541,6 @@ export default function Home() {
               LinkedIn
             </a>
           </div>
-          <p className="mt-4 text-xs text-slate-500">
-            Or email directly:{" "}
-            <span className="text-slate-400">admin@aitipseveryday.com</span>
-          </p>
         </div>
       </section>
       </div>
