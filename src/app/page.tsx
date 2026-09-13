@@ -33,6 +33,44 @@ const METRICS = [
   { label: "Best Practices", value: 96 },
   { label: "SEO", value: 91 },
 ];
+
+const PROJECTS = [
+  {
+    title: "AML & Fraud Detection Toolkit",
+    status: "Live · Gumroad",
+    desc: "A 6-rule BFIU-calibrated transaction monitoring engine plus a LightGBM ML layer for bKash/Nagad-style MFS data. Includes a calibration doc explaining why global AML tools misfire on South Asian mobile-money patterns.",
+    metric: "Pipeline: rules → risk score → ML → SAR export",
+    tags: ["Python", "LightGBM", "Jupyter"],
+    links: [
+      { label: "GitHub", href: "https://github.com/monsurhabib01/synthetic-aml-detection" },
+      { label: "Gumroad", href: "https://monsurhabib01.gumroad.com/l/pythonamltoolkit" },
+    ],
+  },
+  {
+    title: "Triageist — ER Triage Prediction",
+    status: "Kaggle Hackathon 2026",
+    desc: "Random Forest model predicting Emergency Severity Index (1–5) from patient vitals, built for a $10K-prize Kaggle hackathon. Documents its own limitations openly — synthetic data, class imbalance — instead of overselling the result.",
+    metric: "Dataset: 5,000 synthetic patient records",
+    tags: ["Python", "Scikit-learn", "EDA"],
+    links: [{ label: "GitHub", href: "https://github.com/monsurhabib01/kaggle-competitions" }],
+  },
+  {
+    title: "DA Freelance Toolkit",
+    status: "Live · built with Claude API",
+    desc: "An AI-powered growth engine for data-analytics freelancers: proposal generator, gig-SEO optimizer, rate calculator, and a client pipeline board — API key kept server-side, never exposed to the browser.",
+    metric: "4 tools · React + Express + Claude API",
+    tags: ["React", "Express", "Claude API"],
+    links: [{ label: "GitHub", href: "https://github.com/monsurhabib01/da-freelance-toolkit" }],
+  },
+  {
+    title: "Data Cleaning Projects",
+    status: "Freelance portfolio",
+    desc: "Three real cleanup jobs — B2B contact deduplication for CRM import, workforce data filtering, and retail sales normalization — each with the messy input and the clean, audit-ready output.",
+    metric: "821 → 464 clean rows · 1,280-row dataset cleaned",
+    tags: ["Python", "Pandas", "Excel"],
+    links: [{ label: "GitHub", href: "https://github.com/monsurhabib01/data-cleaning-projects" }],
+  },
+];
 // -------------------------------------------------------------------------
 
 function useTypedWord(words: string[]) {
@@ -276,6 +314,60 @@ function WorkflowStrip({ variant }: { variant: "pwa" | "fraud" }) {
   );
 }
 
+function ProjectCard({
+  title,
+  status,
+  desc,
+  metric,
+  tags,
+  links,
+}: {
+  title: string;
+  status: string;
+  desc: string;
+  metric: string;
+  tags: string[];
+  links: { label: string; href: string }[];
+}) {
+  return (
+    <div className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-slate-700">
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-sm font-semibold text-slate-100">{title}</h3>
+        <span className="whitespace-nowrap rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-medium text-emerald-400">
+          {status}
+        </span>
+      </div>
+      <p className="text-sm leading-relaxed text-slate-400">{desc}</p>
+      <div className="border-t border-slate-800 pt-3 font-mono text-xs text-slate-500">
+        {metric}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {tags.map((t) => (
+          <span
+            key={t}
+            className="rounded-md border border-slate-800 px-2 py-1 text-[11px] text-slate-400"
+          >
+            {t}
+          </span>
+        ))}
+      </div>
+      <div className="flex gap-4 pt-1">
+        {links.map((l) => (
+          <a
+            key={l.href}
+            href={l.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-medium text-emerald-400 transition hover:text-emerald-300"
+          >
+            {l.label} →
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProofCard({
   title,
   children,
@@ -312,6 +404,9 @@ export default function Home() {
           <nav className="hidden items-center gap-8 text-sm text-slate-400 sm:flex">
             <a href="#proof" className="transition hover:text-slate-200">
               Work
+            </a>
+            <a href="#projects" className="transition hover:text-slate-200">
+              Projects
             </a>
             <a
               href="https://aitipseveryday.com"
@@ -407,7 +502,7 @@ export default function Home() {
           <WorkflowStrip variant={tab} />
           {tab === "pwa" && (
             <a
-              href="https://brta-busfare.pages.dev/"
+              href="https://bus-fare-bd.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-emerald-400 transition hover:text-emerald-300"
@@ -492,6 +587,24 @@ export default function Home() {
               alongside client delivery work.
             </div>
           </ProofCard>
+        </div>
+      </section>
+
+      {/* PROJECTS */}
+      <section id="projects" className="mx-auto mt-24 max-w-6xl scroll-mt-20">
+        <div className="mb-8 text-center">
+          <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+            Shipped, not shelved
+          </div>
+          <h2 className="mt-2 text-2xl font-bold text-slate-100 sm:text-3xl">
+            Selected work
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {PROJECTS.map((p) => (
+            <ProjectCard key={p.title} {...p} />
+          ))}
         </div>
       </section>
 
