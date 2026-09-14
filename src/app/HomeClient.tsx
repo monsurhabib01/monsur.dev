@@ -390,6 +390,75 @@ function ProofCard({
   );
 }
 
+// TODO: replace with your real Formspree endpoint.
+// Sign up free at https://formspree.io, create a form, and paste its
+// ID here (looks like "xyzabcde"). Until then this posts nowhere.
+const WAITLIST_FORM_ID = "YOUR_FORM_ID";
+
+function WaitlistForm() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+    try {
+      const res = await fetch(`https://formspree.io/f/${WAITLIST_FORM_ID}`, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <p className="text-sm font-medium text-emerald-400">
+        You&apos;re on the list — I&apos;ll email you at launch.
+      </p>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row"
+    >
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="you@company.com"
+        className="w-full flex-1 rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none"
+      />
+      <button
+        type="submit"
+        disabled={status === "loading"}
+        className="rounded-lg bg-emerald-500 px-6 py-3 text-sm font-medium text-slate-950 transition hover:bg-emerald-400 disabled:opacity-60"
+      >
+        {status === "loading" ? "Joining…" : "Join Waitlist"}
+      </button>
+      {status === "error" && (
+        <p className="text-xs text-red-400 sm:absolute sm:-bottom-6">
+          Something went wrong — try again, or email hello@aitipseveryday.com directly.
+        </p>
+      )}
+    </form>
+  );
+}
+
 function WritingCard({ title, url, date }: BlogPost) {
   return (
     <a
@@ -630,6 +699,26 @@ export default function HomeClient({ posts }: { posts: BlogPost[] }) {
           {PROJECTS.map((p) => (
             <ProjectCard key={p.title} {...p} />
           ))}
+        </div>
+      </section>
+
+      {/* COMING SOON — waitlist capture for the hosted AML API */}
+      <section className="mx-auto mt-24 max-w-6xl scroll-mt-20">
+        <div className="rounded-2xl border border-emerald-500/20 bg-slate-900/60 p-8 text-center sm:p-12">
+          <div className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+            Coming soon
+          </div>
+          <h2 className="mt-2 text-2xl font-bold text-slate-100 sm:text-3xl">
+            Hosted AML Monitoring API
+          </h2>
+          <p className="mx-auto mt-3 max-w-md text-slate-400">
+            The 6-rule engine from the toolkit, as a drop-in API endpoint —
+            send a transaction, get a risk score back. No infra to run
+            yourself.
+          </p>
+          <div className="mt-8">
+            <WaitlistForm />
+          </div>
         </div>
       </section>
 
